@@ -31,9 +31,9 @@ bot.load_extension(
     "cogs.roblox"
 )
 
-bot.load_extension(
-    "cogs.moderation"
-)
+# bot.load_extension(
+#     "cogs.moderation"
+# )
 
 
 
