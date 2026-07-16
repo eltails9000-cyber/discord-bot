@@ -5,6 +5,9 @@ from utils import maintenance_state
 from utils.permissions import owner_check
 
 
+print("🚀 Iniciando bot...")
+
+
 intents = discord.Intents.all()
 
 
@@ -13,13 +16,17 @@ bot = discord.Bot(
 )
 
 
-# Permiso global de owner
+print("✅ Bot creado")
+
+
 bot.add_check(owner_check)
 
 
 
 @bot.event
 async def on_ready():
+
+    print("🔥 Evento on_ready ejecutado")
 
     await bot.change_presence(
         status=discord.Status.dnd,
@@ -33,6 +40,8 @@ async def on_ready():
 
     await bot.sync_commands()
 
+    print("✅ Comandos sincronizados")
+
 
 
 async def maintenance_check(ctx):
@@ -43,7 +52,6 @@ async def maintenance_check(ctx):
         "restart",
         "shutdown"
     ]
-
 
     if maintenance_state.maintenance_mode:
 
@@ -56,22 +64,24 @@ async def maintenance_check(ctx):
 
             return False
 
-
     return True
 
 
 
-# Mantenimiento
 bot.add_check(maintenance_check)
 
 
 
-# Cargar comandos
+print("📦 Cargando comandos...")
+
+
 bot.load_extension("cogs.roblox")
 bot.load_extension("cogs.owner")
 bot.load_extension("cogs.maintenance")
 bot.load_extension("cogs.moderation")
 
+
+print("✅ Cogs cargados")
 
 
 bot.run(TOKEN)
