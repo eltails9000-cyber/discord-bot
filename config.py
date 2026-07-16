@@ -1,9 +1,15 @@
 import os
 
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-ROBLOX_API_KEY = os.getenv("ROBLOX_API_KEY")
+TOKEN = os.getenv("DISCORD_TOKEN")
 
-UNIVERSE_ID = "TU_UNIVERSE_ID_AQUI"
+ROBLOX_KEY = os.getenv(
+    "ROBLOX_API_KEY"
+)
 
-API_URL = os.getenv("API_URL")
+API_URL = os.getenv(
+    "API_URL"
+)
+
+
+OWNER_ID = 2232558360
