@@ -29,13 +29,8 @@ async def on_ready():
 
 
 
-@bot.event
-async def on_application_command(ctx):
+async def maintenance_check(ctx):
 
-    command = ctx.command.name
-
-
-    # Comandos que siguen funcionando en mantenimiento
     allowed_commands = [
         "maintenance",
         "botstatus",
@@ -43,21 +38,21 @@ async def on_application_command(ctx):
         "shutdown"
     ]
 
-
     if maintenance_state.maintenance_mode:
 
-        if command not in allowed_commands:
+        if ctx.command.name not in allowed_commands:
 
             await ctx.respond(
-                "🔴 **Bot en mantenimiento.**\n"
-                "Intenta más tarde.",
+                "🔴 **Bot en mantenimiento.**\nIntenta más tarde.",
                 ephemeral=True
             )
 
-            raise discord.CheckFailure
+            return False
+
+    return True
 
 
-
+bot.add_check(maintenance_check)
 # Cargar comandos
 bot.load_extension("cogs.roblox")
 bot.load_extension("cogs.owner")
