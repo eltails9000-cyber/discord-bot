@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 import os
 
-from database import add_ban, remove_ban
-from roblox import send_message
+# from database import add_ban, remove_ban
+# from roblox import send_message
 
 
 app = Flask(__name__)
@@ -186,10 +186,9 @@ def get_commands():
 # RUN
 # =====================
 
-app.run(
+if __name__ == "__main__":
 
-    host="0.0.0.0",
-
-    port=8080
-
-)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8080))
+    )
