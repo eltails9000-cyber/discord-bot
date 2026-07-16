@@ -1,11 +1,10 @@
 import discord
 from discord.ext import commands
 
+from utils import maintenance_state
 
-OWNER_ID = 1042929958286266540  # Cambia por tu ID
 
-
-maintenance_mode = False
+OWNER_ID = 1042929958286266540  # TU ID
 
 
 class Maintenance(commands.Cog):
@@ -14,40 +13,29 @@ class Maintenance(commands.Cog):
         self.bot = bot
 
 
-    def is_owner(self, ctx):
-        return ctx.author.id == OWNER_ID
-
-
-
     @discord.slash_command(
         name="maintenance",
-        description="Controla el modo mantenimiento"
+        description="Activar o desactivar mantenimiento"
     )
     async def maintenance(
         self,
         ctx,
         mode: discord.Option(
             str,
-            choices=[
-                "on",
-                "off"
-            ]
+            choices=["on", "off"]
         )
     ):
 
-        global maintenance_mode
-
-
-        if not self.is_owner(ctx):
+        if ctx.author.id != OWNER_ID:
             return await ctx.respond(
-                "❌ No tienes permiso.",
+                "❌ Sin permisos.",
                 ephemeral=True
             )
 
 
         if mode == "on":
 
-            maintenance_mode = True
+            maintenance_state.maintenance_mode = True
 
             await ctx.respond(
                 "🔴 **Modo mantenimiento activado**\n"
@@ -57,13 +45,17 @@ class Maintenance(commands.Cog):
 
         else:
 
-            maintenance_mode = False
+            maintenance_state.maintenance_mode = False
 
             await ctx.respond(
                 "🟢 **Modo mantenimiento desactivado**\n"
                 "El bot vuelve a funcionar."
             )
 
+
+
+def setup(bot):
+    bot.add_cog(Maintenance(bot))
 
 
 def setup(bot):
