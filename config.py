@@ -1,0 +1,9 @@
+import os
+
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+
+ROBLOX_API_KEY = os.getenv("ROBLOX_API_KEY")
+
+UNIVERSE_ID = "TU_UNIVERSE_ID_AQUI"
+
+API_URL = os.getenv("API_URL")
