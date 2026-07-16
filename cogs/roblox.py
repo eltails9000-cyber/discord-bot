@@ -15,7 +15,7 @@ class Roblox(commands.Cog):
     def send_api(self, endpoint, data):
 
         try:
-
+print("🚀 Enviando a API:", endpoint, data)
             response = requests.post(
 
                 f"{API_URL}/{endpoint}",
