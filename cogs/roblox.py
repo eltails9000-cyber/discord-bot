@@ -14,8 +14,10 @@ class Roblox(commands.Cog):
 
     def send_api(self, endpoint, data):
 
+        print("🚀 ENVIANDO A API:", endpoint, data)
+
         try:
-print("🚀 Enviando a API:", endpoint, data)
+
             response = requests.post(
 
                 f"{API_URL}/{endpoint}",
@@ -31,13 +33,19 @@ print("🚀 Enviando a API:", endpoint, data)
             )
 
 
+            print(
+                "📡 RESPUESTA API:",
+                response.text
+            )
+
+
             return response.json()
 
 
         except Exception as e:
 
             print(
-                "[API ERROR]",
+                "❌ ERROR API:",
                 e
             )
 
@@ -59,7 +67,7 @@ print("🚀 Enviando a API:", endpoint, data)
         await ctx.defer()
 
 
-        # Guardar local
+        # Guardar en database local
         ban(
             userid,
             reason,
@@ -86,7 +94,7 @@ print("🚀 Enviando a API:", endpoint, data)
 
         else:
 
-            status = "⚠️ Guardado local, API falló"
+            status = "⚠️ API falló"
 
 
 
@@ -113,7 +121,6 @@ Estado:
 
 
 
-
     @discord.slash_command(
         name="robloxcheck",
         description="Comprueba si un jugador está baneado"
@@ -124,7 +131,6 @@ Estado:
         userid: str
     ):
 
-
         await ctx.defer()
 
 
@@ -132,7 +138,6 @@ Estado:
 
 
         if result:
-
 
             await ctx.respond(
 
@@ -151,15 +156,11 @@ Staff:
 
             )
 
-
         else:
-
 
             await ctx.respond(
                 "✅ No tiene ban"
             )
-
-
 
 
 
@@ -175,16 +176,14 @@ Staff:
         userid: str
     ):
 
-
         await ctx.defer()
 
 
-        # Base local
+        # Quitar de database local
         unban(userid)
 
 
-
-        # API Roblox
+        # Enviar a Roblox API
         api = self.send_api(
 
             "unban",
