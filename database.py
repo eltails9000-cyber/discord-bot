@@ -3,51 +3,78 @@ import os
 from datetime import datetime
 
 
-FILE = "bans.json"
+FILE="data/bans.json"
 
 
-def load_bans():
+
+def load():
+
     if not os.path.exists(FILE):
         return {}
 
-    with open(FILE, "r") as f:
+    with open(FILE,"r") as f:
         return json.load(f)
 
 
 
-def save_bans(data):
-    with open(FILE, "w") as f:
-        json.dump(data, f, indent=4)
+
+def save(data):
+
+    os.makedirs(
+        "data",
+        exist_ok=True
+    )
+
+    with open(FILE,"w") as f:
+        json.dump(
+            data,
+            f,
+            indent=4
+        )
 
 
 
-def add_ban(userid, reason, moderator):
 
-    bans = load_bans()
+def ban(userid,reason,staff):
 
-    bans[str(userid)] = {
-        "reason": reason,
-        "moderator": moderator,
-        "date": str(datetime.now())
+    data=load()
+
+
+    data[str(userid)]={
+
+        "userid":userid,
+        "reason":reason,
+        "staff":staff,
+        "time":str(datetime.now()),
+        "active":True
+
     }
 
-    save_bans(bans)
+
+    save(data)
 
 
 
-def remove_ban(userid):
 
-    bans = load_bans()
+def check(userid):
 
-    if str(userid) in bans:
-        del bans[str(userid)]
+    data=load()
 
-    save_bans(bans)
+    return data.get(
+        str(userid)
+    )
 
 
 
-def is_banned(userid):
 
-    bans = load_bans()
+def unban(userid):
 
-    return bans.get(str(userid))
+    data=load()
+
+
+    if str(userid) in data:
+
+        del data[str(userid)]
+
+
+    save(data)
