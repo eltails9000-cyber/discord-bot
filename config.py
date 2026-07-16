@@ -1,21 +1,11 @@
 import os
 
+TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Discord Bot Token
-TOKEN = os.getenv(
-    "DISCORD_TOKEN"
-)
+# Roblox API
+API_KEY = os.getenv("ROBLOX_API_KEY")
+ROBLOX_KEY = API_KEY
 
+API_URL = os.getenv("API_URL")
 
-# Glory or Death API
-API_URL = os.getenv(
-    "API_URL"
-)
-
-API_KEY = os.getenv(
-    "ROBLOX_API_KEY"
-)
-
-
-# Owner
 OWNER_ID = 1042929958286266540
