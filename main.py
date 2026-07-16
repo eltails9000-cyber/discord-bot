@@ -1,7 +1,8 @@
 import discord
-from config import TOKEN
 
+from config import TOKEN
 from utils import maintenance_state
+from utils.permissions import owner_check
 
 
 intents = discord.Intents.all()
@@ -10,6 +11,11 @@ intents = discord.Intents.all()
 bot = discord.Bot(
     intents=intents
 )
+
+
+# Permiso global de owner
+bot.add_check(owner_check)
+
 
 
 @bot.event
@@ -38,6 +44,7 @@ async def maintenance_check(ctx):
         "shutdown"
     ]
 
+
     if maintenance_state.maintenance_mode:
 
         if ctx.command.name not in allowed_commands:
@@ -49,10 +56,16 @@ async def maintenance_check(ctx):
 
             return False
 
+
     return True
 
 
+
+# Mantenimiento
 bot.add_check(maintenance_check)
+
+
+
 # Cargar comandos
 bot.load_extension("cogs.roblox")
 bot.load_extension("cogs.owner")
@@ -60,5 +73,5 @@ bot.load_extension("cogs.maintenance")
 bot.load_extension("cogs.moderation")
 
 
-# Iniciar bot
+
 bot.run(TOKEN)
