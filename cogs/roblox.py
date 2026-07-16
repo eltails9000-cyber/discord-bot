@@ -1,16 +1,47 @@
 import discord
-
 from discord.ext import commands
+import requests
 
-from database import ban,check,unban
-
+from database import ban, check, unban
+from config import API_URL, API_KEY
 
 
 class Roblox(commands.Cog):
 
-    def __init__(self,bot):
+    def __init__(self, bot):
+        self.bot = bot
 
-        self.bot=bot
+
+    def send_api(self, endpoint, data):
+
+        try:
+
+            response = requests.post(
+
+                f"{API_URL}/{endpoint}",
+
+                headers={
+                    "x-api-key": API_KEY
+                },
+
+                json=data,
+
+                timeout=10
+
+            )
+
+
+            return response.json()
+
+
+        except Exception as e:
+
+            print(
+                "[API ERROR]",
+                e
+            )
+
+            return None
 
 
 
@@ -21,13 +52,14 @@ class Roblox(commands.Cog):
     async def robloxban(
         self,
         ctx,
-        userid:str,
-        reason:str
+        userid: str,
+        reason: str
     ):
 
         await ctx.defer()
 
 
+        # Guardar local
         ban(
             userid,
             reason,
@@ -35,9 +67,32 @@ class Roblox(commands.Cog):
         )
 
 
+        # Enviar a Roblox API
+        api = self.send_api(
+
+            "ban",
+
+            {
+                "userid": userid,
+                "reason": reason
+            }
+
+        )
+
+
+        if api and api.get("success"):
+
+            status = "✅ Enviado a Roblox"
+
+        else:
+
+            status = "⚠️ Guardado local, API falló"
+
+
+
         await ctx.respond(
 
-            f"""
+f"""
 🚫 **Roblox Ban**
 
 Usuario:
@@ -48,33 +103,44 @@ Razón:
 
 Staff:
 {ctx.author}
+
+Estado:
+{status}
 """
+
         )
 
 
 
+
+
     @discord.slash_command(
-        name="robloxcheck"
+        name="robloxcheck",
+        description="Comprueba si un jugador está baneado"
     )
     async def checkban(
         self,
         ctx,
-        userid:str
+        userid: str
     ):
 
 
         await ctx.defer()
 
 
-        result=check(userid)
+        result = check(userid)
 
 
         if result:
 
+
             await ctx.respond(
 
-            f"""
-🚫 Está baneado
+f"""
+🚫 **Está baneado**
+
+Usuario:
+`{userid}`
 
 Razón:
 {result['reason']}
@@ -82,9 +148,12 @@ Razón:
 Staff:
 {result['staff']}
 """
+
             )
 
+
         else:
+
 
             await ctx.respond(
                 "✅ No tiene ban"
@@ -93,21 +162,68 @@ Staff:
 
 
 
+
+
+
     @discord.slash_command(
-        name="robloxunban"
+        name="robloxunban",
+        description="Quita un ban de Roblox"
     )
-    async def unban(
+    async def robloxunban(
         self,
         ctx,
-        userid:str
+        userid: str
     ):
 
+
+        await ctx.defer()
+
+
+        # Base local
         unban(userid)
 
 
-        await ctx.respond(
-            "✅ Ban eliminado"
+
+        # API Roblox
+        api = self.send_api(
+
+            "unban",
+
+            {
+                "userid": userid
+            }
+
         )
+
+
+        if api and api.get("success"):
+
+            status = "✅ Enviado a Roblox"
+
+        else:
+
+            status = "⚠️ API falló"
+
+
+
+        await ctx.respond(
+
+f"""
+✅ **Roblox Unban**
+
+Usuario:
+`{userid}`
+
+Staff:
+{ctx.author}
+
+Estado:
+{status}
+"""
+
+        )
+
+
 
 
 
