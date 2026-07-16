@@ -24,7 +24,7 @@ class Roblox(commands.Cog):
                 f"{API_URL}/{endpoint}",
 
                 headers={
-                    "x-api-key": API_KEY
+                    "x-api-key": ROBLOX_KEY
                 },
 
                 json=data,
