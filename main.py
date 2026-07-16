@@ -1,22 +1,14 @@
 import discord
-import requests
 import os
 
 
-TOKEN=os.getenv(
-    "DISCORD_TOKEN"
-)
+from config import TOKEN
 
 
-API=os.getenv(
-    "API_URL"
-)
+intents = discord.Intents.all()
 
 
-intents=discord.Intents.all()
-
-
-bot=discord.Bot(
+bot = discord.Bot(
     intents=intents
 )
 
@@ -26,33 +18,22 @@ bot=discord.Bot(
 async def on_ready():
 
     print(
-        f"Bot conectado {bot.user}"
+        f"✅ Online como {bot.user}"
     )
 
+    await bot.sync_commands()
 
 
-@bot.slash_command(
-    name="banroblox",
-    description="Banea un jugador de Roblox"
+
+# cargar comandos
+
+bot.load_extension(
+    "cogs.roblox"
 )
-async def banroblox(
-    ctx,
-    userid:str,
-    reason:str
-):
 
-    requests.post(
-        API+"/ban",
-        json={
-            "userid":userid,
-            "reason":reason
-        }
-    )
-
-
-    await ctx.respond(
-        "Jugador baneado correctamente"
-    )
+bot.load_extension(
+    "cogs.moderation"
+)
 
 
 
