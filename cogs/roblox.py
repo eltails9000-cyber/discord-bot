@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import requests
+import asyncio
 
 from database import ban, check, unban
 from config import API_URL, API_KEY
@@ -12,7 +13,7 @@ class Roblox(commands.Cog):
         self.bot = bot
 
 
-    def send_api(self, endpoint, data):
+    def send_api_sync(self, endpoint, data):
 
         print("🚀 ENVIANDO A API:", endpoint, data)
 
@@ -28,7 +29,7 @@ class Roblox(commands.Cog):
 
                 json=data,
 
-                timeout=10
+                timeout=5
 
             )
 
@@ -53,6 +54,16 @@ class Roblox(commands.Cog):
 
 
 
+    async def send_api(self, endpoint, data):
+
+        return await asyncio.to_thread(
+            self.send_api_sync,
+            endpoint,
+            data
+        )
+
+
+
     @discord.slash_command(
         name="robloxban",
         description="Banea jugador de Glory or Death"
@@ -67,38 +78,38 @@ class Roblox(commands.Cog):
         await ctx.defer()
 
 
-        # Guardar en database local
-        ban(
-            userid,
-            reason,
-            str(ctx.author)
-        )
+        try:
+
+            ban(
+                userid,
+                reason,
+                str(ctx.author)
+            )
 
 
-        # Enviar a Roblox API
-        api = self.send_api(
+            api = await self.send_api(
 
-            "ban",
+                "ban",
 
-            {
-                "userid": userid,
-                "reason": reason
-            }
+                {
+                    "userid": userid,
+                    "reason": reason
+                }
 
-        )
-
-
-        if api and api.get("success"):
-
-            status = "✅ Enviado a Roblox"
-
-        else:
-
-            status = "⚠️ API falló"
+            )
 
 
+            if api and api.get("success"):
 
-        await ctx.respond(
+                status = "✅ Enviado a Roblox"
+
+            else:
+
+                status = "⚠️ API falló"
+
+
+
+            await ctx.followup.send(
 
 f"""
 🚫 **Roblox Ban**
@@ -116,7 +127,20 @@ Estado:
 {status}
 """
 
-        )
+            )
+
+
+        except Exception as e:
+
+            print(
+                "❌ ERROR BAN:",
+                e
+            )
+
+            await ctx.followup.send(
+                "❌ Error ejecutando ban"
+            )
+
 
 
 
@@ -139,7 +163,7 @@ Estado:
 
         if result:
 
-            await ctx.respond(
+            await ctx.followup.send(
 
 f"""
 🚫 **Está baneado**
@@ -158,7 +182,7 @@ Staff:
 
         else:
 
-            await ctx.respond(
+            await ctx.followup.send(
                 "✅ No tiene ban"
             )
 
@@ -179,33 +203,33 @@ Staff:
         await ctx.defer()
 
 
-        # Quitar de database local
-        unban(userid)
+        try:
+
+            unban(userid)
 
 
-        # Enviar a Roblox API
-        api = self.send_api(
+            api = await self.send_api(
 
-            "unban",
+                "unban",
 
-            {
-                "userid": userid
-            }
+                {
+                    "userid": userid
+                }
 
-        )
-
-
-        if api and api.get("success"):
-
-            status = "✅ Enviado a Roblox"
-
-        else:
-
-            status = "⚠️ API falló"
+            )
 
 
+            if api and api.get("success"):
 
-        await ctx.respond(
+                status = "✅ Enviado a Roblox"
+
+            else:
+
+                status = "⚠️ API falló"
+
+
+
+            await ctx.followup.send(
 
 f"""
 ✅ **Roblox Unban**
@@ -220,7 +244,19 @@ Estado:
 {status}
 """
 
-        )
+            )
+
+
+        except Exception as e:
+
+            print(
+                "❌ ERROR UNBAN:",
+                e
+            )
+
+            await ctx.followup.send(
+                "❌ Error ejecutando unban"
+            )
 
 
 
