@@ -1,58 +1,118 @@
-import requests
-from config import ROBLOX_API_KEY, UNIVERSE_ID
+import discord
+
+from discord.ext import commands
+
+from database import ban,check,unban
 
 
 
-def send_ban(userid, reason):
+class Roblox(commands.Cog):
 
-    url = (
-        f"https://apis.roblox.com/cloud/v2/universes/"
-        f"{UNIVERSE_ID}/data-stores"
+    def __init__(self,bot):
+
+        self.bot=bot
+
+
+
+    @discord.slash_command(
+        name="robloxban",
+        description="Banea jugador de Glory or Death"
     )
+    async def robloxban(
+        self,
+        ctx,
+        userid:str,
+        reason:str
+    ):
+
+        await ctx.defer()
 
 
-    headers = {
-        "x-api-key": ROBLOX_API_KEY
-    }
+        ban(
+            userid,
+            reason,
+            str(ctx.author)
+        )
 
 
-    data = {
-        "userid": userid,
-        "reason": reason
-    }
+        await ctx.respond(
+
+            f"""
+🚫 **Roblox Ban**
+
+Usuario:
+`{userid}`
+
+Razón:
+{reason}
+
+Staff:
+{ctx.author}
+"""
+        )
 
 
-    r = requests.post(
-        url,
-        headers=headers,
-        json=data
+
+    @discord.slash_command(
+        name="robloxcheck"
     )
+    async def checkban(
+        self,
+        ctx,
+        userid:str
+    ):
 
 
-    return r.status_code
+        await ctx.defer()
+
+
+        result=check(userid)
+
+
+        if result:
+
+            await ctx.respond(
+
+            f"""
+🚫 Está baneado
+
+Razón:
+{result['reason']}
+
+Staff:
+{result['staff']}
+"""
+            )
+
+        else:
+
+            await ctx.respond(
+                "✅ No tiene ban"
+            )
 
 
 
-def send_message(message):
 
-    url = (
-        f"https://apis.roblox.com/messaging-service/v1/"
-        f"publish"
+    @discord.slash_command(
+        name="robloxunban"
     )
+    async def unban(
+        self,
+        ctx,
+        userid:str
+    ):
+
+        unban(userid)
 
 
-    headers = {
-        "x-api-key": ROBLOX_API_KEY
-    }
+        await ctx.respond(
+            "✅ Ban eliminado"
+        )
 
 
-    data = {
-        "message": message
-    }
 
+def setup(bot):
 
-    return requests.post(
-        url,
-        headers=headers,
-        json=data
+    bot.add_cog(
+        Roblox(bot)
     )
