@@ -25,6 +25,7 @@ async def on_ready():
 
 # Cargar comandos
 bot.load_extension("cogs.roblox")
+bot.load_extension("cogs.owner")
 bot.load_extension("cogs.moderation")
 
 # Iniciar bot
