@@ -3,29 +3,31 @@ from discord.ext import commands
 import requests
 import asyncio
 from database import ban, check, unban
-from config import API_URL, ROBLOX_KEY   # ← Cambiado aquí
+from config import API_URL, ROBLOX_KEY
 
 class Roblox(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     def send_api_sync(self, endpoint, data):
-        print("🚀 ENVIANDO A API:", endpoint, data)
+        print(f"🚀 ENVIANDO A API: {endpoint} | {data}")
         try:
             response = requests.post(
                 f"{API_URL}/{endpoint}",
                 headers={"x-api-key": ROBLOX_KEY},
                 json=data,
-                timeout=5
+                timeout=10
             )
-            print("📡 RESPUESTA API:", response.status_code, response.text)
-            return response.json()
+            print(f"📡 RESPUESTA API: {response.status_code} | {response.text[:200]}")
+            return response.json() if response.ok else None
         except Exception as e:
-            print("❌ ERROR API:", e)
+            print(f"❌ ERROR API: {e}")
             return None
 
     async def send_api(self, endpoint, data):
         return await asyncio.to_thread(self.send_api_sync, endpoint, data)
+
+    # ==================== COMANDOS ====================
 
     @discord.slash_command(name="robloxban", description="Banea jugador de Glory or Death")
     async def robloxban(self, ctx, userid: str, reason: str):
@@ -34,19 +36,18 @@ class Roblox(commands.Cog):
             ban(userid, reason, str(ctx.author))
             api = await self.send_api("ban", {"userid": userid, "reason": reason})
             status = "✅ Enviado a Roblox" if api and api.get("success") else "⚠️ API falló"
-            
+
             await ctx.followup.send(f"""
 🚫 **Roblox Ban**
-Usuario: `{userid}`
-Razón: {reason}
-Staff: {ctx.author}
-Estado: {status}
+**Usuario:** `{userid}`
+**Razón:** {reason}
+**Staff:** {ctx.author}
+**Estado:** {status}
 """)
         except Exception as e:
-            print("❌ ERROR BAN:", e)
+            print(f"❌ ERROR BAN: {e}")
             await ctx.followup.send("❌ Error ejecutando ban")
 
-    # (Mantén los otros comandos check y unban igual)
     @discord.slash_command(name="robloxcheck", description="Comprueba si un jugador está baneado")
     async def checkban(self, ctx, userid: str):
         await ctx.defer()
@@ -54,9 +55,9 @@ Estado: {status}
         if result:
             await ctx.followup.send(f"""
 🚫 **Está baneado**
-Usuario: `{userid}`
-Razón: {result['reason']}
-Staff: {result['staff']}
+**Usuario:** `{userid}`
+**Razón:** {result.get('reason', 'Sin razón')}
+**Staff:** {result.get('staff', 'Desconocido')}
 """)
         else:
             await ctx.followup.send("✅ No tiene ban")
@@ -68,15 +69,15 @@ Staff: {result['staff']}
             unban(userid)
             api = await self.send_api("unban", {"userid": userid})
             status = "✅ Enviado a Roblox" if api and api.get("success") else "⚠️ API falló"
-            
+
             await ctx.followup.send(f"""
 ✅ **Roblox Unban**
-Usuario: `{userid}`
-Staff: {ctx.author}
-Estado: {status}
+**Usuario:** `{userid}`
+**Staff:** {ctx.author}
+**Estado:** {status}
 """)
         except Exception as e:
-            print("❌ ERROR UNBAN:", e)
+            print(f"❌ ERROR UNBAN: {e}")
             await ctx.followup.send("❌ Error ejecutando unban")
 
 def setup(bot):
