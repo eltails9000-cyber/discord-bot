@@ -4,7 +4,7 @@ import requests
 import asyncio
 
 from database import ban, check, unban
-from config import API_URL, API_KEY
+from config import API_URL, ROBLOX_KEY
 
 
 class Roblox(commands.Cog):
