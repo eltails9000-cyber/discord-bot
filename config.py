@@ -8,7 +8,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Roblox API
 API_URL = os.getenv("API_URL")
-ROBLOX_KEY = os.getenv("ROBLOX_API_KEY")
+ROBLOX_API_KEY = os.getenv("ROBLOX_API_KEY")
 
 # Owner
 OWNER_ID = 1042929958286266540
