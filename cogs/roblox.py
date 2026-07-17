@@ -22,7 +22,7 @@ class Roblox(commands.Cog):
             response = requests.post(
                 f"{API_URL}/{endpoint}",
                 headers={
-                    "x-api-key": ROBLOX_KEY
+                    "x-api-key": ROBLOX_API_KEY
                 },
                 json=data,
                 timeout=10
